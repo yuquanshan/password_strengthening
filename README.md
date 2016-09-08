@@ -5,9 +5,8 @@ The password strength is reflected by guess probability which is based on Markov
 
 ## PCFGModel.py
 
-It's used for PCFG-Markov(1-gram) based password strength estimation, see Eq. (1) and (2) in the [paper](http://www.cse.psu.edu/~trj1/papers/acsac13.pdf). It contains a class (PCFGModel) which contains the following 
+It's used for PCFG-Markov(1-gram) based password strength estimation, see Eq. (1) and (2) in the [paper](http://www.cse.psu.edu/~trj1/papers/acsac13.pdf). It contains a class (PCFGModel) which contains the following attributes and methods:
 
-attributes:
 	characters	-	all possible characters which could appear in the password
 	lowercase 	- 	all possible lowrecase characters which could appear in the password
 	uppercase 	- 	all possible uppercase characters which could appear in the password
@@ -30,13 +29,12 @@ attributes:
 	upper_markov    -       a {char:list} dictionary storing the markov chain(table) of all uppercase substring
 	digit_markov    -       a {char:list} dictionary storing the markov chain(table) of all digit substring
 	symbol_markov    -       a {char:list} dictionary storing the markov chain(table) of all symbol substring
-
-methods:
 	getPattern(string)	- 	return a pattern of a string, e.g., if the input is "hello123", it turns "L5D3"
 	train(file)		- 	train the model with the input file, e.g., train("[rockyou.txt](http://downloads.skullsecurity.org/passwords/rockyou.txt.bz2)")
 	getGP(string)		-	calculate the guess probability of a password string (you need to train the model first) 	
 
 A more concrete example:
+
 	from PCFGModel import PCFGModel
 	model = PCFGModel()
 	model.train("rockyou.txt")	# will take about 4 min to train
