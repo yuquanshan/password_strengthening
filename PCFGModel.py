@@ -11,11 +11,11 @@ import sys,os,copy,math,random
 class PCFGModel:
 # all possible password characters
 	def __init__(self):
-		self.characters = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+		self.characters = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
 		self.lowercase = "abcdefghijklmnopqrstuvwxyz"
 		self.uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		self.digit = "0123456789"
-		self.symbol = " !\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
+		self.symbol = "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
 		self.symbolLen = len(self.symbol)
 
 	def getPattern(self,psswd):
@@ -94,7 +94,7 @@ class PCFGModel:
 			self.symbol_firsthit[i] = 0
 		for l in lines:
 			if len(l.split()) != 0:
-				psswd = l.split()[0]
+				psswd = l.replace('\n','')
 				self.updateNew(psswd)
 
 	def updateNew(self, psswd):	# update pattern library, markov structure
@@ -443,14 +443,14 @@ class PCFGModel:
 						#tmpStar = self.startPos(tmpPatt)
 					else:
 						tb = self.typeOfChar(tmpPass[i-1])
-						tmpPass1 = tmpPass[:i] + self.rareFirstHit('LUDS'.replace(tb,''))
+						tmpPass1 = tmpPass[:i] + self.rareFirstHit('LUDS'.replace(tb,'')) + tmpPass[i+1:]
 						if tb == 'L':
 							array = self.lower_markov[tmpPass[i-1]]
 							tmpPass2 = tmpPass[:i] + self.lowercase[self.lower_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
-						elif tb = 'U':
+						elif tb == 'U':
 							array = self.upper_markov[tmpPass[i-1]]
 							tmpPass2 = tmpPass[:i] + self.uppercase[self.upper_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
-						elif tb = 'D':
+						elif tb == 'D':
 							array = self.digit_markov[tmpPass[i-1]]
 							tmpPass2 = tmpPass[:i] + self.digit[self.digit_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
 						else:
@@ -466,6 +466,7 @@ class PCFGModel:
 				if(tmpGP < lowestGPSoFar):
 					lowestGPSoFar = tmpGP
 					candi = tmpPass
+			return candi
 		else:
 			pos = self.allThreePos(length)
 			posSize = len(pos)
@@ -476,10 +477,11 @@ class PCFGModel:
 			tried = set([])	# record already-tried position sets
 			count = 1 	# try count
 			while(count <= maxTry):
-				p = pos[random.randint(0,posSize-1)]
-				while(p in tried):	# until new position set appears
-					p = pos[random.randint(0,posSize-1)]
-				tried.add(p)
+				indp = random.randint(0,posSize-1)
+				while(indp in tried):	# until new position set appears
+					indp = random.randint(0,posSize-1)
+				tried.add(indp)
+				p = pos[indp]
 				tmpPass = psswd
 				tmpPatt = pattern
 				for i in p:	
@@ -489,14 +491,14 @@ class PCFGModel:
 						#tmpStar = self.startPos(tmpPatt)
 					else:
 						tb = self.typeOfChar(tmpPass[i-1])
-						tmpPass1 = tmpPass[:i] + self.rareFirstHit('LUDS'.replace(tb,''))
+						tmpPass1 = tmpPass[:i] + self.rareFirstHit('LUDS'.replace(tb,'')) + tmpPass[i+1:]
 						if tb == 'L':
 							array = self.lower_markov[tmpPass[i-1]]
 							tmpPass2 = tmpPass[:i] + self.lowercase[self.lower_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
-						elif tb = 'U':
+						elif tb == 'U':
 							array = self.upper_markov[tmpPass[i-1]]
 							tmpPass2 = tmpPass[:i] + self.uppercase[self.upper_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
-						elif tb = 'D':
+						elif tb == 'D':
 							array = self.digit_markov[tmpPass[i-1]]
 							tmpPass2 = tmpPass[:i] + self.digit[self.digit_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
 						else:
@@ -512,7 +514,8 @@ class PCFGModel:
 				if(tmpGP < lowestGPSoFar):
 					lowestGPSoFar = tmpGP
 					candi = tmpPass
-				count++
+				count+=1
+			return candi
 
 
 	def startPos(pattern):	# given a pattern, return all starting position of each substring
