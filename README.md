@@ -28,7 +28,7 @@ It's used for PCFG-Markov(1-gram) based password strength estimation, see Eq. (1
 	lower_markov 	-	a {char:list} dictionary storing the markov chain(table) of all lowercase substring
 	upper_markov    -       a {char:list} dictionary storing the markov chain(table) of all uppercase substring
 	digit_markov    -       a {char:list} dictionary storing the markov chain(table) of all digit substring
-	symbol_markov    -       a {char:list} dictionary storing the markov chain(table) of all symbol substring
+	symbol_markov   -       a {char:list} dictionary storing the markov chain(table) of all symbol substring
 	
 	getPattern(string)	- 	return a pattern of a string, e.g., if the input is "hello123", it turns "L5D3"
 	train(file)		- 	train the model with the input file, e.g., train("[rockyou.txt](http://downloads.skullsecurity.org/passwords/rockyou.txt.bz2)")
