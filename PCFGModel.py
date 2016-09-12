@@ -93,7 +93,7 @@ class PCFGModel:
 			self.symbol_markov[i] = [0]*len(self.symbol)
 			self.symbol_firsthit[i] = 0
 		for l in lines:
-			if len(l.repalce('\n','')) != 0:
+			if len(l.replace('\n','')) != 0:
 				psswd = l.replace('\n','')
 				self.updateNew(psswd)
 
@@ -606,7 +606,7 @@ class PCFGModel:
 		newpool = ''
 		count = 0
 		for l in lines:
-			if len(l.repalce('\n','')) != 0:
+			if len(l.replace('\n','')) != 0:
 				psswd = l.replace('\n','')
 				newpsswd = self.strengthen(psswd)
 				self.update(psswd,newpsswd)
