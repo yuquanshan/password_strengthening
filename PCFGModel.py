@@ -93,7 +93,7 @@ class PCFGModel:
 			self.symbol_markov[i] = [0]*len(self.symbol)
 			self.symbol_firsthit[i] = 0
 		for l in lines:
-			if len(l.split()) != 0:
+			if len(l.repalce('\n','')) != 0:
 				psswd = l.replace('\n','')
 				self.updateNew(psswd)
 
@@ -391,9 +391,9 @@ class PCFGModel:
 		else:
 			return 'S'
 
-	def strengthen(self,psswd):	# strengthen the psswd, return the strengthened result
+	def strengthen(self,psswd):	# strengthen the psswd, return the strengthened result, if the password's GP is smaller than 10^-20, then it's good to go
 		length = len(psswd)
-		maxTry = 10				# max number of position number tries
+		maxTry = 15				# max number of position number tries
 		buff = 10
 		last = 0
 		if(length == 1):
@@ -433,6 +433,8 @@ class PCFGModel:
 			candi = psswd
 			lowestGPSoFar = self.getGP(psswd)
 			for p in pos:
+				if lowestGPSoFar < math.pow(10,-20):
+					break
 				tmpPass = psswd
 				tmpPatt = pattern
 				#tmpStar = starts
@@ -477,6 +479,8 @@ class PCFGModel:
 			tried = set([])	# record already-tried position sets
 			count = 1 	# try count
 			while(count <= maxTry):
+				if lowestGPSoFar < math.pow(10,-20):
+					break
 				indp = random.randint(0,posSize-1)
 				while(indp in tried):	# until new position set appears
 					indp = random.randint(0,posSize-1)
@@ -527,49 +531,6 @@ class PCFGModel:
 			res.append(offset)
 		return res
 
-		"""if(lengh == 1):			# if length == 1, replace it with one of the safest password
-			box = []
-			tar = []
-			for i in self.lowercase:
-				if len(box) <= buff:
-					box.append(lower_firsthit[i])
-					tar.append(i)
-					if lower_firsthit[i] > last:
-						last = lower_firsthit[i]
-				else:
-					if lower_firsthit[i] < last:
-						ind = box.index(last)
-						box.pop(ind)
-						tar.pop(ind)
-						box.append(lower_firsthit[i])
-						tar.append(i)
-						last = sorted(box)[-1]
-			for i in self.uppercase:
-				if upper_firsthit[i] < last:
-					ind = box.index(last)
-					box.pop(ind)
-					tar.pop(ind)
-					box.append(upper_firsthit[i])
-					tar.append(i)
-					last = sorted(box)[-1]
-			for i in self.digit:
-				if digit_firsthit[i] < last:
-					ind = box.index(last)
-					box.pop(ind)
-					tar.pop(ind)
-					box.append(digit_firsthit[i])
-					tar.append(i)
-					last = sorted(box)[-1]
-			for i in self.symbol:
-				if symbol_firsthit[i] < last:
-					ind = box.index(last)
-					box.pop(ind)
-					tar.pop(ind)
-					box.append(symbol_firsthit[i])
-					tar.append(i)
-					last = sorted(box)[-1]
-			return tar[random.randint(0,9)]	# randomly choose one from 10 candidates
-			"""
 	
 	def rareFirstHit(self,cat):
 		buff = 10
@@ -638,8 +599,25 @@ class PCFGModel:
 						last = sorted(box)[-1]
 		return tar[random.randint(0,9)]	# randomly choose one from 10 candidates
 
-
-
+	def strengthenFile(self, filename):
+		fi = file(filename,'r')
+		lines = fi.readlines()
+		fi.close()
+		newpool = ''
+		count = 0
+		for l in lines:
+			if len(l.repalce('\n','')) != 0:
+				psswd = l.replace('\n','')
+				newpsswd = self.strengthen(psswd)
+				self.update(psswd,newpsswd)
+				newpool = newpool+newpsswd+'\n'
+				count += 1
+				if count == 100000:
+					print "PROGRESS: 100000 passwords strengthened."
+					count = 0
+		fi = file(filename+'.strengthened','w')
+		fi.write(newpool)
+		fi.close()
 
 
 #if __name__ == "__main__":
