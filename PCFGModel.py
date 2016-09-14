@@ -7,7 +7,7 @@
 # 	S: symbol
 
 
-import sys,os,copy,math,random
+import sys,os,copy,math,random,pickle
 class PCFGModel:
 # all possible password characters
 	def __init__(self):
@@ -15,8 +15,8 @@ class PCFGModel:
 		self.lowercase = "abcdefghijklmnopqrstuvwxyz"
 		self.uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		self.digit = "0123456789"
-		self.symbol = "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
-		self.symbolLen = len(self.symbol)
+		self.symbol = " !\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
+		self.symbolLen = len(self.symbol)-1
 
 	def getPattern(self,psswd):
 		length = len(psswd)
@@ -191,7 +191,7 @@ class PCFGModel:
 
 	def getGP(self, psswd):	# calculate the guess probability of a password (psswd)
 		if len(psswd) == 0:	# meaning psswd is empty, then 100% cracking probability apparently
-			return 1;
+			return 1
 		pattern = self.getPattern(psswd);
 		if(self.pattern_lib.has_key(pattern)):
 			gp = float(self.pattern_lib[pattern])/sum(self.pattern_lib.values())
@@ -204,6 +204,8 @@ class PCFGModel:
 			n = 0 
 			ptable = pastr.split()
 			for i in ptable:	# calculate GP for each substring
+				if gp == 0:
+					return 0
 				length = int(i);	
 				sub = psswd[offset:offset+length]
 				ob_freq = float(0)		# observed frequence in (1) of pitfall paper
@@ -285,7 +287,7 @@ class PCFGModel:
 				n = n+1
 			return gp
 		else:	# this pattern is currently not in the pattern library
-			return 0;
+			return 0
 
 	def clearOld(self, psswd):	# clear the old password from the PCFG model records, symmetric to updateNew
 		pattern = self.getPattern(psswd)
@@ -393,7 +395,7 @@ class PCFGModel:
 
 	def strengthen(self,psswd):	# strengthen the psswd, return the strengthened result, if the password's GP is smaller than 10^-20, then it's good to go
 		length = len(psswd)
-		maxTry = 15				# max number of position number tries
+		maxTry = 10				# max number of position number tries
 		buff = 10
 		last = 0
 		if(length == 1):
@@ -603,22 +605,114 @@ class PCFGModel:
 		fi = file(filename,'r')
 		lines = fi.readlines()
 		fi.close()
-		newpool = ''
+		#newpool = ''
+		fi = file(filename+'.strengthened','w')
 		count = 0
 		for l in lines:
 			if len(l.replace('\n','')) != 0:
 				psswd = l.replace('\n','')
 				newpsswd = self.strengthen(psswd)
 				self.update(psswd,newpsswd)
-				newpool = newpool+newpsswd+'\n'
 				count += 1
-				if count == 100000:
-					print "PROGRESS: 100000 passwords strengthened."
-					count = 0
-		fi = file(filename+'.strengthened','w')
-		fi.write(newpool)
+				if count%100 == 0:
+					print "PROGRESS: " + str(count) + " passwords strengthened."
+				#newpool = newpool+newpsswd+'\n'
+				fi.write(newpsswd+'\n')
+		#fi.write(newpool)
 		fi.close()
 
+	def randomPickMarkov(self,chain,which,num):	# e.g., self.randomPickMarkov(symbol_markov['?'],'S',10) - randomly choose 10 symbols in chain symbol_markov['?'], pick the smallest one
+		poolLen = 0
+		if which == 'L':
+			poolLen = len(self.lowercase)
+		elif which == 'U':
+			poolLen = len(self.uppercase)
+		elif which in 'D':
+			poolLen = len(self.digit)
+		else:
+			poolLen = self.symbolLen
+		pool = range(0,poolLen)
+		count = 1
+		lowest = 100000000
+		ind = 0
+		while(count <= num):
+			rid = random.randint(0,poolLen-1)
+			tmpi = pool[rid]
+			if chain[tmpi] < lowest:
+				ind = tmpi
+				lowest = chain[tmpi]
+			pool.pop(rid)
+			poolLen -= 1
+			count+=1
+		return ind
+
+	def test_getAllGP(self,filename):
+		fi = file(filename,'r')
+		lines = fi.readlines()
+		fi.close()
+		count = 1
+		for l in lines:
+			s = l.replace('\n','')
+			self.getGP(s)
+			if count%100 == 0:
+				print "PROCESS: "+str(count)+" GPs calculated."
+			count+=1
+
+	def serializeModel(self,filename):
+		fo = file(filename,'wb')
+		pickle.dump(self.characters,fo,-1)
+		pickle.dump(self.lowercase,fo,-1)
+		pickle.dump(self.uppercase,fo,-1)
+		pickle.dump(self.digit,fo,-1)
+		pickle.dump(self.symbol,fo,-1)
+
+		pickle.dump(self.pattern_lib,fo,-1)
+
+		pickle.dump(self.lower_occurence,fo,-1)
+		pickle.dump(self.upper_occurence,fo,-1)
+		pickle.dump(self.digit_occurence,fo,-1)
+		pickle.dump(self.symbol_occurence,fo,-1)
+
+		pickle.dump(self.lower_firsthit,fo,-1)
+		pickle.dump(self.upper_firsthit,fo,-1)
+		pickle.dump(self.digit_firsthit,fo,-1)
+		pickle.dump(self.symbol_firsthit,fo,-1)
+
+		pickle.dump(self.lower_markov,fo,-1)
+		pickle.dump(self.upper_markov,fo,-1)
+		pickle.dump(self.digit_markov,fo,-1)
+		pickle.dump(self.symbol_markov,fo,-1)
+
+		pickle.dump(self.symbolLen,fo,-1)
+		fo.close()
+
+	def deserializeModel(self,filename):
+		fi = file(filename,'rb')
+	
+		self.characters = pickle.load(fi)
+		
+		self.lowercase = pickle.load(fi)
+		self.uppercase = pickle.load(fi)
+		self.digit = pickle.load(fi)
+		self.symbol = pickle.load(fi)
+
+		self.pattern_lib = pickle.load(fi)
+
+		self.lower_occurence = pickle.load(fi)
+		self.upper_occurence = pickle.load(fi)
+		self.digit_occurence = pickle.load(fi)
+		self.symbol_occurence = pickle.load(fi)
+
+		self.lower_firsthit = pickle.load(fi)
+		self.upper_firsthit = pickle.load(fi)
+		self.digit_firsthit = pickle.load(fi)
+		self.symbol_firsthit = pickle.load(fi)
+
+		self.lower_markov = pickle.load(fi)
+		self.upper_markov = pickle.load(fi)
+		self.digit_markov = pickle.load(fi)
+		self.symbol_markov = pickle.load(fi)
+		fi.close()
 
 #if __name__ == "__main__":
 #	assert len(sys.argv) == 2, "correct usage: make_markov.py <passwords_file>"
