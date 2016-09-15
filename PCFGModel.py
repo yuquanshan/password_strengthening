@@ -7,7 +7,7 @@
 # 	S: symbol
 
 
-import sys,os,copy,math,random,pickle
+import sys,os,copy,math,random,pickle,threading
 class PCFGModel:
 # all possible password characters
 	def __init__(self):
@@ -17,6 +17,7 @@ class PCFGModel:
 		self.digit = "0123456789"
 		self.symbol = " !\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
 		self.symbolLen = len(self.symbol)-1
+		#self.lock = threading.lock()	# in order to protect model data in multithread
 
 	def getPattern(self,psswd):
 		length = len(psswd)
@@ -625,7 +626,7 @@ class PCFGModel:
 						last = sorted(box)[-1]
 		return tar[random.randint(0,9)]	# randomly choose one from 10 candidates
 
-	def strengthenFile(self, filename):
+	def strengthenFile(self, filename):	# single thread only
 		fi = file(filename,'r')
 		lines = fi.readlines()
 		fi.close()
