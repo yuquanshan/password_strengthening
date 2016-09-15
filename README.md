@@ -19,6 +19,11 @@ It's used for PCFG-Markov(1-gram) based password strength estimation, see Eq. (1
 	upper_occurence	- 	a {length:{sub:occurence}} dictionary storing the occurences of uppercase substrings
 	digit_occurence	- 	a {length:{sub:occurence}} dictionary storing the occurences of digit substrings
 	symbol_occurence-	a {length:{sub:occurence}} dictionary storing the occurences of symbol substrings
+
+	lower_occurence_sum	-	a {length:sum}	dictionary storing the total occurence of lowercase substrings with a certain length (in order to accelerate computing)
+	upper_occurence_sum	-	a {length:sum} dictionary storing the total occurence of uppercase substrings with a certain length
+	digit_occurence_sum	-	a {length:sum} dictionary storing the total occurence of digit substrings with a certain length
+	symbol_occurence_sum-	a {length:sum} dictionary storing the total occurence of symbol substrings with a certain length 
 	
 	lower_firsthit	- 	a {char:occurence} dictionary storing the occurences of the case where a lowercase character appears first in its substring
 	upper_firsthit  -       a {char:occurence} dictionary storing the occurences of the case where a uppercase character appears first in its substring

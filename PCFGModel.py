@@ -72,6 +72,10 @@ class PCFGModel:
 		self.upper_occurence = {}	
 		self.digit_occurence = {}
 		self.symbol_occurence = {}
+		self.lower_occurence_sum = {}	#{length:occurence_sum}
+		self.upper_occurence_sum = {}
+		self.digit_occurence_sum = {}
+		self.symbol_occurence_sum = {}
 		self.lower_markov = {}
 		self.lower_firsthit = {}
 		for i in self.lowercase:
@@ -118,12 +122,14 @@ class PCFGModel:
 			if sbox[n] == "L":
 				sub = psswd[offset:offset+length]	# get that substring
 				if self.lower_occurence.has_key(length):
+					self.lower_occurence_sum[length] += 1
 					if self.lower_occurence[length].has_key(sub):
 						self.lower_occurence[length][sub] += 1
 					else:
 						self.lower_occurence[length][sub] = 1
 				else:
 					self.lower_occurence[length] = {sub:1}
+					self.lower_occurence_sum[length] = 1
 				self.lower_firsthit[psswd[offset]] = self.lower_firsthit[psswd[offset]]+1
 				j = offset
 				while(j<offset+length-1):
@@ -132,12 +138,14 @@ class PCFGModel:
 			elif sbox[n] == "U":
 				sub = psswd[offset:offset+length]	# get that substring
 				if self.upper_occurence.has_key(length):
+					self.upper_occurence_sum[length] += 1
 					if self.upper_occurence[length].has_key(sub):
 						self.upper_occurence[length][sub] += 1
 					else:
 						self.upper_occurence[length][sub] = 1
 				else:
 					self.upper_occurence[length] = {sub:1}
+					self.upper_occurence_sum[length] = 1
 				self.upper_firsthit[psswd[offset]] = self.upper_firsthit[psswd[offset]]+1
 				j = offset
 				while(j<offset+length-1):
@@ -146,12 +154,14 @@ class PCFGModel:
 			elif sbox[n] == "D":	
 				sub = psswd[offset:offset+length]	# get that substring
 				if self.digit_occurence.has_key(length):
+					self.digit_occurence_sum[length] += 1
 					if self.digit_occurence[length].has_key(sub):
 						self.digit_occurence[length][sub] += 1
 					else:
 						self.digit_occurence[length][sub] = 1
 				else:
 					self.digit_occurence[length] = {sub:1}
+					self.digit_occurence_sum[length] = 1
 				self.digit_firsthit[psswd[offset]] = self.digit_firsthit[psswd[offset]]+1
 				j = offset
 				while(j<offset+length-1):
@@ -160,12 +170,14 @@ class PCFGModel:
 			else:
 				sub = psswd[offset:offset+length]	# get that substring
 				if self.symbol_occurence.has_key(length):
+					self.symbol_occurence_sum[length] += 1
 					if self.symbol_occurence[length].has_key(sub):
 						self.symbol_occurence[length][sub] += 1
 					else:
 						self.symbol_occurence[length][sub] = 1
 				else:
 					self.symbol_occurence[length] = {sub:1}
+					self.symbol_occurence_sum[length] = 1
 				if self.symbol_firsthit.has_key(psswd[offset]):
 					self.symbol_firsthit[psswd[offset]] = self.symbol_firsthit[psswd[offset]]+1
 				else:
@@ -213,7 +225,7 @@ class PCFGModel:
 				if sbox[n] == 'L':
 					if self.lower_occurence.has_key(length):
 						if self.lower_occurence[length].has_key(sub):
-							ob_freq = float(self.lower_occurence[length][sub])/sum(self.lower_occurence[length].values())
+							ob_freq = float(self.lower_occurence[length][sub])/self.lower_occurence_sum[length]
 						else:
 							ob_freq = 0
 					else:
@@ -232,7 +244,7 @@ class PCFGModel:
 				elif sbox[n] == 'U':
 					if self.upper_occurence.has_key(length):
 						if self.upper_occurence[length].has_key(sub):
-							ob_freq = float(self.upper_occurence[length][sub])/sum(self.upper_occurence[length].values())
+							ob_freq = float(self.upper_occurence[length][sub])/self.upper_occurence_sum[length]
 						else:
 							ob_freq = 0
 					else:
@@ -250,7 +262,7 @@ class PCFGModel:
 				elif sbox[n] == 'D':
 					if self.digit_occurence.has_key(length):
 						if self.digit_occurence[length].has_key(sub):
-							ob_freq = float(self.digit_occurence[length][sub])/sum(self.digit_occurence[length].values())
+							ob_freq = float(self.digit_occurence[length][sub])/self.digit_occurence_sum[length]
 						else:
 							ob_freq = 0
 					else:
@@ -268,7 +280,7 @@ class PCFGModel:
 				else:
 					if self.symbol_occurence.has_key(length):
 						if self.symbol_occurence[length].has_key(sub):
-							ob_freq = float(self.symbol_occurence[length][sub])/sum(self.symbol_occurence[length].values())
+							ob_freq = float(self.symbol_occurence[length][sub])/self.symbol_occurence_sum[length]
 						else:
 							ob_freq = 0
 					else:
@@ -308,6 +320,7 @@ class PCFGModel:
 			if sbox[n] == "L":
 				sub = psswd[offset:offset+length]	# get that substring
 				if self.lower_occurence.has_key(length):
+					self.lower_occurence_sum[length] -= 1
 					if self.lower_occurence[length].has_key(sub):
 						self.lower_occurence[length][sub] -= 1
 				self.lower_firsthit[psswd[offset]] = self.lower_firsthit[psswd[offset]]-1
@@ -318,6 +331,7 @@ class PCFGModel:
 			elif sbox[n] == "U":
 				sub = psswd[offset:offset+length]	# get that substring
 				if self.upper_occurence.has_key(length):
+					self.upper_occurence_sum[length] -= 1
 					if self.upper_occurence[length].has_key(sub):
 						self.upper_occurence[length][sub] -= 1
 				self.upper_firsthit[psswd[offset]] = self.upper_firsthit[psswd[offset]]-1
@@ -328,6 +342,7 @@ class PCFGModel:
 			elif sbox[n] == "D":	
 				sub = psswd[offset:offset+length]	# get that substring
 				if self.digit_occurence.has_key(length):
+					self.digit_occurence_sum[length] -= 1
 					if self.digit_occurence[length].has_key(sub):
 						self.digit_occurence[length][sub] -= 1
 				self.digit_firsthit[psswd[offset]] = self.digit_firsthit[psswd[offset]]-1
@@ -338,6 +353,7 @@ class PCFGModel:
 			else:
 				sub = psswd[offset:offset+length]	# get that substring
 				if self.symbol_occurence.has_key(length):
+					self.symbol_occurence_sum[length] -= 1
 					if self.symbol_occurence[length].has_key(sub):
 						self.symbol_occurence[length][sub] -= 1
 				if self.symbol_firsthit.has_key(psswd[offset]):
@@ -395,7 +411,7 @@ class PCFGModel:
 
 	def strengthen(self,psswd):	# strengthen the psswd, return the strengthened result, if the password's GP is smaller than 10^-20, then it's good to go
 		length = len(psswd)
-		maxTry = 10				# max number of position number tries
+		maxTry = 5				# max number of position number tries
 		buff = 10
 		last = 0
 		if(length == 1):
@@ -427,7 +443,7 @@ class PCFGModel:
 						candi = tmp
 						lowestGPSoFar = tmpGP
 			return candi
-		elif(length <= 6):
+		elif(length <= 5):
 			pos = self.allThreePos(length)
 			#posSize = len(pos)
 			pattern = self.getPattern(psswd)
@@ -435,7 +451,7 @@ class PCFGModel:
 			candi = psswd
 			lowestGPSoFar = self.getGP(psswd)
 			for p in pos:
-				if lowestGPSoFar < math.pow(10,-20):
+				if lowestGPSoFar < math.pow(10,-16):
 					break
 				tmpPass = psswd
 				tmpPatt = pattern
@@ -458,7 +474,7 @@ class PCFGModel:
 							array = self.digit_markov[tmpPass[i-1]]
 							tmpPass2 = tmpPass[:i] + self.digit[self.digit_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
 						else:
-							array = self.symbol_markov[tmpPass[i-1]]
+							array = self.symbol_markov[tmpPass[i-1]][:self.symbolLen]
 							tmpPass2 = tmpPass[:i] + self.symbol[self.symbol_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
 						if self.getGP(tmpPass1) < self.getGP(tmpPass2):
 							tmpPass = tmpPass1
@@ -471,7 +487,7 @@ class PCFGModel:
 					lowestGPSoFar = tmpGP
 					candi = tmpPass
 			return candi
-		else:
+		elif(length <= 25):
 			pos = self.allThreePos(length)
 			posSize = len(pos)
 			pattern = self.getPattern(psswd)
@@ -481,13 +497,14 @@ class PCFGModel:
 			tried = set([])	# record already-tried position sets
 			count = 1 	# try count
 			while(count <= maxTry):
-				if lowestGPSoFar < math.pow(10,-20):
+				if lowestGPSoFar < math.pow(10,-18):
 					break
 				indp = random.randint(0,posSize-1)
 				while(indp in tried):	# until new position set appears
 					indp = random.randint(0,posSize-1)
 				tried.add(indp)
 				p = pos[indp]
+
 				tmpPass = psswd
 				tmpPatt = pattern
 				for i in p:	
@@ -508,7 +525,7 @@ class PCFGModel:
 							array = self.digit_markov[tmpPass[i-1]]
 							tmpPass2 = tmpPass[:i] + self.digit[self.digit_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
 						else:
-							array = self.symbol_markov[tmpPass[i-1]]
+							array = self.symbol_markov[tmpPass[i-1]][:self.symbolLen]
 							tmpPass2 = tmpPass[:i] + self.symbol[self.symbol_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
 						if self.getGP(tmpPass1) < self.getGP(tmpPass2):
 							tmpPass = tmpPass1
@@ -522,7 +539,14 @@ class PCFGModel:
 					candi = tmpPass
 				count+=1
 			return candi
-
+		else:
+			candi = psswd
+			for i in range(0,3):
+				if self.getGP(candi) < math.pow(10,-18):
+					break
+				j = random.randint(0,length-1)
+				candi = candi[:j] + self.rareFirstHit('LUDS') + candi[j+1:]
+			return candi
 
 	def startPos(pattern):	# given a pattern, return all starting position of each substring
 		pastr = pattern.replace('L',' ').replace('U',' ').replace('D',' ').replace('S',' ').split()
@@ -673,6 +697,11 @@ class PCFGModel:
 		pickle.dump(self.digit_occurence,fo,-1)
 		pickle.dump(self.symbol_occurence,fo,-1)
 
+		pickle.dump(self.lower_occurence_sum,fo,-1)
+		pickle.dump(self.upper_occurence_sum,fo,-1)
+		pickle.dump(self.digit_occurence_sum,fo,-1)
+		pickle.dump(self.symbol_occurence_sum,fo,-1)
+
 		pickle.dump(self.lower_firsthit,fo,-1)
 		pickle.dump(self.upper_firsthit,fo,-1)
 		pickle.dump(self.digit_firsthit,fo,-1)
@@ -703,6 +732,11 @@ class PCFGModel:
 		self.digit_occurence = pickle.load(fi)
 		self.symbol_occurence = pickle.load(fi)
 
+		self.lower_occurence_sum = pickle.load(fi)
+		self.upper_occurence_sum = pickle.load(fi)
+		self.digit_occurence_sum = pickle.load(fi)
+		self.symbol_occurence_sum = pickle.load(fi)
+
 		self.lower_firsthit = pickle.load(fi)
 		self.upper_firsthit = pickle.load(fi)
 		self.digit_firsthit = pickle.load(fi)
@@ -712,6 +746,8 @@ class PCFGModel:
 		self.upper_markov = pickle.load(fi)
 		self.digit_markov = pickle.load(fi)
 		self.symbol_markov = pickle.load(fi)
+
+		self.symbolLen = pickle.load(fi)
 		fi.close()
 
 #if __name__ == "__main__":
