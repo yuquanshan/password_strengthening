@@ -45,3 +45,18 @@ A more concrete example:
 	model = PCFGModel()
 	model.train("rockyou.txt")	# will take about 4 min to train
 	model.getGP("hello123")		# will return the GP of password "hello123"
+	
+Alternative you can skip over the training set, since there is a serialized model (trained on "rockyou.txt") available at my [site](http://www.cse.psu.edu/~yxs182/jumpstart.pkl). After download it, you can deserialze it by:
+	
+	from PCFGModel import PCFGModel
+	model = PCFGModel()
+	model.deserializeModel('jumpstart.pkl')	# will take about half minute, which is much shorter
+	
+There are jumpstart scripts available, the first version is single process version:
+	
+	python jumpstart.py rockyou.txt.6.4 	# strengthen rockyou.txt.6.4 based on jumpstart.pkl
+	
+the second version is faster multiprocess version (split the to-be-strengthened file into multiple parts and create multiple parallel process to strengthen their own part, unfortunately they can't share updated model yet):
+
+	python jumpstart_multiprocess.py rockyou.txt.6.4 3	# create three processes to strengthen rockyou.txt.6.4
+	
