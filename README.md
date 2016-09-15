@@ -46,7 +46,7 @@ A more concrete example:
 	model.train("rockyou.txt")	# will take about 4 min to train
 	model.getGP("hello123")		# will return the GP of password "hello123"
 	
-Alternative you can skip over the training set, since there is a serialized model (trained on "rockyou.txt") available at my [site](http://www.cse.psu.edu/~yxs182/jumpstart.pkl). After download it, you can deserialze it by:
+Alternative you can skip over the training set, since there is a serialized model (trained on "rockyou.txt") available at my [site](http://www.cse.psu.edu/~yxs182/jumpstart.pkl). After downloading it, you can deserialze it by:
 	
 	from PCFGModel import PCFGModel
 	model = PCFGModel()
