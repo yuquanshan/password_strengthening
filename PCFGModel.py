@@ -427,17 +427,13 @@ class PCFGModel:
 					tmp = self.rareFirstHit(i)
 					if i == j:
 						if i == 'L':
-							array = self.lower_markov[tmp]
-							tmp = tmp + self.lowercase[self.lower_markov[tmp].index(sorted(array)[0])]
+							tmp = tmp + self.lowercase[self.randomPickMarkov(self.lower_markov[tmp],'L',10)]
 						elif i == 'U':
-							array = self.upper_markov[tmp]
-							tmp = tmp + self.uppercase[self.upper_markov[tmp].index(sorted(array)[0])]
+							tmp = tmp + self.uppercase[self.randomPickMarkov(self.upper_markov[tmp],'U',10)]
 						elif i == 'D':
-							array = self.digit_markov[tmp]
-							tmp = tmp + self.digit[self.digit_markov[tmp].index(sorted(array)[0])]
+							tmp = tmp + self.digit[self.randomPickMarkov(self.digit_markov[tmp],'D',5)]
 						else:
-							array = self.symbol_markov[tmp][:self.symbolLen]
-							tmp = tmp + self.symbol[self.symbol_markov[tmp].index(sorted(array)[0])]
+							tmp = tmp + self.symbol[self.randomPickMarkov(self.symbol_markov[tmp],'S',10)]
 					else:
 						tmp = tmp+self.rareFirstHit(j)
 					tmpGP = self.getGP(tmp)
@@ -467,17 +463,13 @@ class PCFGModel:
 						tb = self.typeOfChar(tmpPass[i-1])
 						tmpPass1 = tmpPass[:i] + self.rareFirstHit('LUDS'.replace(tb,'')) + tmpPass[i+1:]
 						if tb == 'L':
-							array = self.lower_markov[tmpPass[i-1]]
-							tmpPass2 = tmpPass[:i] + self.lowercase[self.lower_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
+							tmpPass2 = tmpPass[:i] + self.lowercase[self.randomPickMarkov(self.lower_markov[tmpPass[i-1]],'L',10)] + tmpPass[i+1:]
 						elif tb == 'U':
-							array = self.upper_markov[tmpPass[i-1]]
-							tmpPass2 = tmpPass[:i] + self.uppercase[self.upper_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
+							tmpPass2 = tmpPass[:i] + self.uppercase[self.randomPickMarkov(self.upper_markov[tmpPass[i-1]],'U',10)] + tmpPass[i+1:]
 						elif tb == 'D':
-							array = self.digit_markov[tmpPass[i-1]]
-							tmpPass2 = tmpPass[:i] + self.digit[self.digit_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
+							tmpPass2 = tmpPass[:i] + self.digit[self.randomPickMarkov(self.digit_markov[tmpPass[i-1]],'D',5)] + tmpPass[i+1:]
 						else:
-							array = self.symbol_markov[tmpPass[i-1]][:self.symbolLen]
-							tmpPass2 = tmpPass[:i] + self.symbol[self.symbol_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
+							tmpPass2 = tmpPass[:i] + self.symbol[self.randomPickMarkov(self.symbol_markov[tmpPass[i-1]],'S',10)] + tmpPass[i+1:]
 						if self.getGP(tmpPass1) < self.getGP(tmpPass2):
 							tmpPass = tmpPass1
 						else:
@@ -518,17 +510,13 @@ class PCFGModel:
 						tb = self.typeOfChar(tmpPass[i-1])
 						tmpPass1 = tmpPass[:i] + self.rareFirstHit('LUDS'.replace(tb,'')) + tmpPass[i+1:]
 						if tb == 'L':
-							array = self.lower_markov[tmpPass[i-1]]
-							tmpPass2 = tmpPass[:i] + self.lowercase[self.lower_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
+							tmpPass2 = tmpPass[:i] + self.lowercase[self.randomPickMarkov(self.lower_markov[tmpPass[i-1]],'L',10)] + tmpPass[i+1:]
 						elif tb == 'U':
-							array = self.upper_markov[tmpPass[i-1]]
-							tmpPass2 = tmpPass[:i] + self.uppercase[self.upper_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
+							tmpPass2 = tmpPass[:i] + self.uppercase[self.randomPickMarkov(self.upper_markov[tmpPass[i-1]],'U',10)] + tmpPass[i+1:]
 						elif tb == 'D':
-							array = self.digit_markov[tmpPass[i-1]]
-							tmpPass2 = tmpPass[:i] + self.digit[self.digit_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
+							tmpPass2 = tmpPass[:i] + self.digit[self.randomPickMarkov(self.digit_markov[tmpPass[i-1]],'D',5)] + tmpPass[i+1:]
 						else:
-							array = self.symbol_markov[tmpPass[i-1]][:self.symbolLen]
-							tmpPass2 = tmpPass[:i] + self.symbol[self.symbol_markov[tmpPass[i-1]].index(sorted(array)[0])] + tmpPass[i+1:]
+							tmpPass2 = tmpPass[:i] + self.symbol[self.randomPickMarkov(self.symbol_markov[tmpPass[i-1]],'S',10)] + tmpPass[i+1:]
 						if self.getGP(tmpPass1) < self.getGP(tmpPass2):
 							tmpPass = tmpPass1
 						else:
