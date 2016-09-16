@@ -7,7 +7,7 @@
 # 	S: symbol
 
 
-import sys,os,copy,math,random,pickle,threading
+import sys,os,copy,math,random,pickle,threading,time
 class PCFGModel:
 # all possible password characters
 	def __init__(self):
@@ -17,6 +17,7 @@ class PCFGModel:
 		self.digit = "0123456789"
 		self.symbol = " !\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
 		self.symbolLen = len(self.symbol)-1
+		random.seed(time.time)
 		#self.lock = threading.lock()	# in order to protect model data in multithread
 
 	def getPattern(self,psswd):
