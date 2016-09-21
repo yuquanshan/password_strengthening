@@ -60,13 +60,13 @@ There are jumpstart scripts available, the first version is single process versi
 	
 	python jumpstart.py rockyou.txt.6.4 	# strengthen rockyou.txt.6.4 based on jumpstart.pkl
 	
-the second version is a faster multiprocess version (split the to-be-strengthened file into multiple parts and create multiple parallel process to strengthen their own part, unfortunately they can't share updated model yet):
+the second version is a faster multiprocess version (split the to-be-strengthened file into multiple parts and create multiple parallel processes to strengthen their own part, unfortunately they can't share updated model yet):
 
 	python jumpstart_multiprocess.py rockyou.txt.6.4 3	# create three processes to strengthen rockyou.txt.6.4
 	
 # Tech details (how does strengthen works):
 
-Assume we already have model in our memory.
+Assume we already have a model in our memory.
 
 	Given the password to be strengthened, and the PCFG model
 	if password length == 1
@@ -90,7 +90,7 @@ Assume we already have model in our memory.
 			get the three characters according to the similar greedy fashion above, use them to replace old characters
 			if the new password's GP is smaller than a threshold (10^-20)
 				break the loop, use this new pass word as our new password
-	else (when password length > 25, then usually it is strong enough, no sofisticated strengthening required)
+	else (when password length > 25, then usually it is strong enough, no sophisticated strengthening required)
 		randomly choose three positions to replace to see if there is any improvement
 	
 	Also note that the function to select the characters with lowest first-hit/transition probability also involves randomness (randomly pick several characters and select the lowest among them), for fear that the deterministic selection could be detrimental if part of strengthened passwords are leaked and used in training set.
