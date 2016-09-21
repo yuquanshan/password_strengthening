@@ -64,7 +64,7 @@ the second version is a faster multiprocess version (split the to-be-strengthene
 
 	python jumpstart_multiprocess.py rockyou.txt.6.4 3	# create three processes to strengthen rockyou.txt.6.4
 	
-# Tech details (how does strengthen works):
+# Tech details (how strengthen() works):
 
 Assume we already have a model in our memory.
 
